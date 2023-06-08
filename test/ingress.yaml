@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/server-snippet: |
+      if ($http_header = "test") {
+        set $upstream_service "blue-service";
+      }
+      if ($http_header != "test") {
+        set $upstream_service "green-service";
+      }
+      proxy_pass http://$upstream_service;
+spec:
+  rules:
+  - host: web.abc.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: green-service
+            port:
+              number: 80

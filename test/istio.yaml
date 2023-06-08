@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-service
+spec:
+  hosts:
+  - web.abc.com
+  http:
+  - match:
+    - headers:
+        test:
+          exact: blue
+    route:
+    - destination:
+        host: blue-service
+        subset: blue
+  - route:
+    - destination:
+        host: green-service
+        subset: green
